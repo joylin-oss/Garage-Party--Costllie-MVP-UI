@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costllie API Gateway | File Explorer</title>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .explorer-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 1rem;
+            border: 1px solid var(--border-light);
+        }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+        }
+        .breadcrumb i { font-size: 1.25rem; }
+        .breadcrumb span { cursor: pointer; transition: color 0.3s ease; }
+        .breadcrumb span:hover { color: #fff; }
+        .breadcrumb .separator { color: rgba(255,255,255,0.2); }
+        .breadcrumb .current { color: #fff; font-weight: 500; }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .project-folder {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .project-folder:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.4);
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .folder-icon {
+            font-size: 3.5rem;
+            color: #8b5cf6;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        .project-folder:hover .folder-icon { opacity: 1; transform: scale(1.05); }
+        .folder-name { font-weight: 500; text-align: center; }
+        .folder-meta { font-size: 0.75rem; color: var(--text-muted); }
+        
+        /* Add new card special style */
+        .project-folder.add-new {
+            border: 1px dashed rgba(255,255,255,0.2);
+            background: transparent;
+        }
+        .project-folder.add-new:hover {
+            border-color: var(--primary-neon);
+            background: rgba(0, 246, 255, 0.05);
+        }
+        .project-folder.add-new .folder-icon {
+            color: var(--primary-neon);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"><i class="ph ph-hexagon"></i></div>
+                <h1 class="logo-text">Costllie</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="projects.html" class="nav-item active"><i class="ph ph-folder-open"></i> Projects</a>
+                <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Workspace Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title">
+                    <h2>Project Explorer</h2>
+                    <p class="subtitle">Manage all your AI Agent workspaces and configurations</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-icon"><i class="ph ph-magnifying-glass"></i></button>
+                    <button class="btn btn-icon"><i class="ph ph-funnel"></i></button>
+                </div>
+            </header>
+
+            <div class="explorer-toolbar">
+                <div class="breadcrumb">
+                    <i class="ph ph-hard-drives"></i>
+                    <span>Workspace</span>
+                    <i class="ph ph-caret-right separator"></i>
+                    <span class="current">My Projects</span>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm"><i class="ph ph-folder-plus"></i> New Folder</button>
+                </div>
+            </div>
+
+            <div class="projects-grid">
+                <!-- Add New Project -->
+                <div class="project-folder add-new" onclick="openModal()">
+                    <div class="folder-icon"><i class="ph ph-plus"></i></div>
+                    <h3>Create New Project</h3>
+                    <p>Initialize a new AI Agent gateway connection</p>
+                </div>
+
+                <!-- Existing Projects -->
+                <a href="project_detail.html" class="project-folder">
+                    <i class="ph ph-folder-open folder-icon"></i>
+                    <span class="folder-name">Q3 Marketing Automation</span>
+                    <span class="folder-meta">CST-8492-AX • 3 hrs ago</span>
+                </a>
+                
+                <a href="project_detail.html" class="project-folder">
+                    <i class="ph ph-folder-open folder-icon"></i>
+                    <span class="folder-name">Customer Support Bot</span>
+                    <span class="folder-meta">CST-2931-BZ • 1 day ago</span>
+                </a>
+                
+                <a href="project_detail.html" class="project-folder">
+                    <i class="ph ph-folder-open folder-icon"></i>
+                    <span class="folder-name">Sales Data Processing</span>
+                    <span class="folder-meta">CST-5510-MC • 4 days ago</span>
+                </a>
+                
+                <a href="project_detail.html" class="project-folder" style="opacity: 0.6">
+                    <i class="ph ph-archive folder-icon" style="color: #9ca3af;"></i>
+                    <span class="folder-name">Old Analytics Report</span>
+                    <span class="folder-meta">Archived</span>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Project Modal -->
+    <div id="create-project-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3><i class="ph ph-folder-plus" style="color: var(--primary-neon); margin-right: 0.5rem;"></i> Create New Project</h3>
+                <button class="btn btn-icon" onclick="closeModal()" style="border: none; background: transparent; cursor: pointer; color: var(--text-muted);"><i class="ph ph-x" style="font-size: 1.5rem;"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label style="color: var(--text-muted); font-size: 0.9rem;">Project Name</label>
+                    <input type="text" id="new-project-name" class="form-input" placeholder="e.g. Q4 Marketing Automation">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="color: var(--text-muted); font-size: 0.9rem;">Target Core Task</label>
+                    <select class="form-input">
+                        <option>Customer Support QA</option>
+                        <option>Internal Operations</option>
+                        <option>Content Generation</option>
+                        <option>Data Analysis</option>
+                        <option>Other Custom Workflow</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="submitProject()">Create Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Close modal when clicking on overlay background
+        document.getElementById('create-project-modal').addEventListener('click', closeModal);
+
+        function openModal() {
+            document.getElementById('create-project-modal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('new-project-name').focus(); }, 50);
+        }
+        function closeModal() {
+            document.getElementById('create-project-modal').classList.add('hidden');
+            document.getElementById('new-project-name').value = '';
+        }
+        function submitProject() {
+            const name = document.getElementById('new-project-name').value;
+            if (name.trim() === '') {
+                alert('Project name is required');
+                return;
+            }
+            location.href = 'project_detail.html';
+        }
+
+        // Allow pressing Enter to submit
+        document.getElementById('new-project-name').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') submitProject();
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costllie API Gateway | Project Details</title>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-neon);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            transition: opacity 0.3s ease;
+        }
+        .back-link:hover { opacity: 0.8; }
+
+        .project-tabs {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.75rem 0;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            top: 1px;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active {
+            color: var(--primary-neon);
+            border-bottom-color: var(--primary-neon);
+        }
+        [data-theme="light"] .tab-btn:hover { color: var(--text-main); }
+        [data-theme="light"] .tab-btn.active { color: var(--primary-neon); border-bottom-color: var(--primary-neon); }
+        
+        /* Analytics CSS Overrides */
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(20, 22, 30, 0.8), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex; flex-direction: column; gap: 0.5rem;
+            backdrop-filter: blur(10px); transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.2); }
+        .stat-card .label { color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: #fff; }
+        .stat-card .trend { font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; }
+        .trend.up { color: var(--success); }
+        .trend.down { color: var(--danger); }
+        
+        .table-container { margin-top: 2.5rem; margin-bottom: 1rem; background: rgba(20, 22, 30, 0.6); backdrop-filter: blur(20px); border: 1px solid var(--border-light); border-radius: 1.5rem; padding: 1.5rem; overflow-x: auto; }
+        .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .roi-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .roi-table th { color: var(--text-muted); font-weight: 500; padding: 1rem 1.5rem 1rem 0; border-bottom: 1px solid var(--border-light); white-space: nowrap; }
+        .roi-table td { padding: 1.25rem 1.5rem 1.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #fff; }
+        .roi-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        .roi-table tr:last-child td { border-bottom: none; }
+        .table-badge { padding: 0.35rem 0.85rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-healthy { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-monitor { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-risk { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        
+        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"><i class="ph ph-hexagon"></i></div>
+                <h1 class="logo-text">Costllie</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="projects.html" class="nav-item active"><i class="ph ph-folder-open"></i> Projects</a>
+                <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Workspace Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="page-title">
+                    <a href="projects.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Projects</a>
+                    <h2>Project Configuration</h2>
+                    <p class="subtitle">Set parameters and monitor execution analytics for this task</p>
+                </div>
+                <div class="header-actions">
+                    <div class="project-code-badge">
+                        <i class="ph ph-hash"></i> <span>Project Code:</span> <strong
+                            id="display-project-code">CST-8492-AX</strong>
+                    </div>
+                    <button class="btn btn-icon"><i class="ph ph-bell"></i></button>
+                </div>
+            </header>
+            
+            <div class="project-tabs">
+                <button class="tab-btn active" id="tab-btn-config">Configuration & Monitor</button>
+                <button class="tab-btn" id="tab-btn-analytics">Output Analytics</button>
+            </div>
+
+            <!-- Tab 1: Dashboard Grid -->
+            <div id="tab-config" class="dashboard-grid">
+
+                <!-- Setup Widget -->
+                <section class="widget glass-panel setup-widget">
+                    <div class="widget-header">
+                        <h3><i class="ph ph-sliders"></i> Agent Configuration</h3>
+                    </div>
+                    <div class="widget-body">
+                        <!-- Connect Project Agent -->
+                        <div class="form-group" style="padding: 1.25rem; background: rgba(14, 165, 233, 0.05); border: 1px dashed rgba(14, 165, 233, 0.4); border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                            <label style="color: #0ea5e9; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;"><i class="ph ph-plugs-connected"></i> Connect Agent API (串接專屬龍蝦)</label>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">Route a specific AI component endpoint through this project's gateway to monitor operations independently.</p>
+                            <div class="input-with-icon">
+                                <i class="ph ph-link"></i>
+                                <input type="password" id="agent-key-input" placeholder="Enter Agent Endpoint or Access Key (sk-...)" value="">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Budget Limit (USD)</label>
+                            <div class="input-with-icon">
+                                <i class="ph ph-currency-dollar"></i>
+                                <input type="number" id="budget-input" value="50.00" step="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Token Amount</label>
+                            <div class="input-with-icon">
+                                <i class="ph ph-coins"></i>
+                                <input type="number" id="token-input" value="1000000" step="1000">
+                            </div>
+                        </div>
+                        <div class="form-group options-group">
+                            <label>Expected Benefits & Focus (Check all that apply)</label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-time" checked>
+                                <span class="checkmark"></span>
+                                <span class="label-text">Time Saved (Hours)</span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-roi" checked>
+                                <span class="checkmark"></span>
+                                <span class="label-text">Maximize ROI (%)</span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-cost">
+                                <span class="checkmark"></span>
+                                <span class="label-text">Cost Efficiency</span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-quality" checked>
+                                <span class="checkmark"></span>
+                                <span class="label-text">Output Quality / Accuracy</span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-error-rate">
+                                <span class="checkmark"></span>
+                                <span class="label-text">Error Rate Reduction</span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="goal-csat">
+                                <span class="checkmark"></span>
+                                <span class="label-text">Boost CSAT (Satisfaction)</span>
+                            </label>
+                        </div>
+                        <button id="run-agent-btn" class="btn btn-primary btn-full">
+                            <i class="ph ph-play"></i> Initialize AI Agent
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Monitoring Widget -->
+                <section class="widget glass-panel monitoring-widget">
+                    <div class="widget-header">
+                        <h3><i class="ph ph-activity"></i> Live Execution Monitor</h3>
+                        <span id="status-badge" class="badge badge-idle">Idle</span>
+                    </div>
+                    <div class="widget-body center-content">
+                        <!-- Circular Progress -->
+                        <div class="progress-circle" id="token-progress-circle">
+                            <svg viewBox="0 0 100 100">
+                                <circle class="bg" cx="50" cy="50" r="45"></circle>
+                                <circle class="progress" cx="50" cy="50" r="45" id="progress-bar"></circle>
+                            </svg>
+                            <div class="progress-text">
+                                <span id="current-tokens">0</span>
+                                <span class="label">Tokens Used</span>
+                            </div>
+                        </div>
+
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <span class="label">Budget Used</span>
+                                <strong id="current-cost">$0.00</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Speed</span>
+                                <strong id="current-speed">0 T/s</strong>
+                            </div>
+                        </div>
+
+                        <div id="alert-box" class="alert-box hidden">
+                            <i class="ph ph-warning-circle"></i>
+                            <span>Warning: Nearing Token Limit!</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analysis Widget -->
+                <section class="widget glass-panel analysis-widget span-2">
+                    <div class="widget-header">
+                        <h3><i class="ph ph-chart-polar"></i> Post-Execution Analysis</h3>
+                        <span class="refresh-time" id="last-run-time">Pending run...</span>
+                    </div>
+                    <div class="widget-body">
+                        <div id="analysis-placeholder" class="placeholder-state">
+                            <i class="ph ph-magic-wand"></i>
+                            <p>Run the AI Agent to generate effectiveness analysis and ROI metrics.</p>
+                        </div>
+
+                        <div id="analysis-results" class="results-grid hidden">
+                            <div class="result-card primary">
+                                <div class="icon-box"><i class="ph ph-trend-up"></i></div>
+                                <div>
+                                    <span class="label">Final ROI</span>
+                                    <strong class="value" id="res-roi">--%</strong>
+                                </div>
+                            </div>
+                            <div class="result-card">
+                                <div class="icon-box blue"><i class="ph ph-clock"></i></div>
+                                <div>
+                                    <span class="label">Time Saved</span>
+                                    <strong class="value" id="res-time">-- hrs</strong>
+                                </div>
+                            </div>
+                            <div class="result-card">
+                                <div class="icon-box green"><i class="ph ph-wallet"></i></div>
+                                <div>
+                                    <span class="label">Final Cost</span>
+                                    <strong class="value" id="res-cost">$0.00</strong>
+                                </div>
+                            </div>
+
+                            <!-- AI Suggestions -->
+                            <div class="suggestion-panel" id="suggestion-panel">
+                                <h4><i class="ph ph-sparkle"></i> AI Strategic Suggestion</h4>
+                                <p id="ai-suggestion-text">Awaiting execution data...</p>
+                                <div class="action-buttons mt-3">
+                                    <button class="btn btn-secondary btn-sm" id="optimize-btn">Apply
+                                        Optimization</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+            
+            <!-- Tab 2: Analytics Grid -->
+            <div id="tab-analytics" class="hidden">
+                 <!-- Stats Overview Grid -->
+                 <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="label">Total Tokens Consumed</span>
+                        <strong class="value">45.2M</strong>
+                        <span class="trend up"><i class="ph ph-trend-up"></i> +12.5% this month</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Avg ROI for feature</span>
+                        <strong class="value">68%</strong>
+                        <span class="trend up"><i class="ph ph-trend-up"></i> +4.2% this month</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Est. Cost Savings</span>
+                        <strong class="value">$12.4K</strong>
+                        <span class="trend up"><i class="ph ph-trend-up"></i> +$2.1K this month</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Failed Executions</span>
+                        <strong class="value">3</strong>
+                        <span class="trend down"><i class="ph ph-trend-down"></i> -2 this month</span>
+                    </div>
+                </div>
+    
+                <!-- Charts Grid -->
+                <div class="dashboard-grid">
+                    <!-- Usage Timeline Chart -->
+                    <section class="widget glass-panel span-2">
+                        <div class="widget-header">
+                            <h3><i class="ph ph-chart-bar"></i> Token Consumption Trend</h3>
+                        </div>
+                        <div class="widget-body">
+                            <div class="chart-container">
+                                <canvas id="usageChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Performance by Selected Goal Chart -->
+                    <section class="widget glass-panel">
+                        <div class="widget-header">
+                            <h3><i class="ph ph-target"></i> Performance by Selected Goal</h3>
+                        </div>
+                        <div class="widget-body">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <section class="widget glass-panel">
+                        <div class="widget-header">
+                            <h3><i class="ph ph-cpu"></i> Agent Model Distribution</h3>
+                        </div>
+                        <div class="widget-body">
+                            <div class="chart-container" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+                                <canvas id="modelChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+    
+                <!-- ROI Breakdown Table -->
+                <div class="table-container">
+                    <div class="table-header-row">
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem;">Feature & Workflow ROI</h3>
+                            <p style="color: var(--text-muted); font-size: 0.875rem;">Track which AI-powered tasks create value and which ones should be reduced.</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" style="border-radius: 2rem; background: rgba(255,255,255,0.05);">Last 30 days</button>
+                    </div>
+                    <table class="roi-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Feature</th>
+                                <th>Model</th>
+                                <th>Cost</th>
+                                <th>Value / Uplift</th>
+                                <th>ROI</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color: var(--text-muted); font-weight: 600;">Product Launch Copy</td>
+                                <td style="color: var(--text-muted);">Launch Campaign 2026</td>
+                                <td style="color: var(--text-muted);">GPT-4.1</td>
+                                <td style="color: var(--text-muted);">NT$ 2,140</td>
+                                <td style="color: var(--success); font-weight: 600;">+NT$ 48,000</td>
+                                <td style="font-weight: 600;">22.4x</td>
+                                <td><span class="table-badge badge-healthy">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td style="color: var(--text-muted); font-weight: 600;">Event FAQ Agent</td>
+                                <td style="color: var(--text-muted);">Launch Support Bot</td>
+                                <td style="color: var(--text-muted);">Claude 3.7</td>
+                                <td style="color: var(--text-muted);">NT$ 1,020</td>
+                                <td style="color: var(--text-muted);">+61 hrs saved</td>
+                                <td style="font-weight: 600;">11.8x</td>
+                                <td><span class="table-badge badge-healthy">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td style="color: var(--text-muted); font-weight: 600;">Sales Follow-up Drafting</td>
+                                <td style="color: var(--text-muted);">CRM Follow-up</td>
+                                <td style="color: var(--text-muted);">GPT-4.1-mini</td>
+                                <td style="color: var(--text-muted);">NT$ 860</td>
+                                <td style="color: var(--success); font-weight: 600;">+NT$ 21,000</td>
+                                <td style="font-weight: 600;">24.4x</td>
+                                <td><span class="table-badge badge-monitor">Monitor</span></td>
+                            </tr>
+                            <tr>
+                                <td style="color: var(--text-muted); font-weight: 600;">Daily Internal Summary</td>
+                                <td style="color: var(--text-muted);">Ops Reporting</td>
+                                <td style="color: var(--text-muted);">GPT-4.1</td>
+                                <td style="color: var(--text-muted);">NT$ 3,260</td>
+                                <td style="color: var(--text-muted);">+9 hrs saved</td>
+                                <td style="font-weight: 600;">0.9x</td>
+                                <td><span class="table-badge badge-risk">Overuse Risk</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- AI Strategy Insights -->
+                <div class="table-container insight-container" style="margin-top: 1.5rem; border-color: rgba(139, 92, 246, 0.4);">
+                    <div class="table-header-row" style="margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="background: rgba(139, 92, 246, 0.2); padding: 0.5rem; border-radius: 50%; color: #8b5cf6;">
+                                <i class="ph ph-lightbulb-filament" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.15rem; color: var(--text-main);">Commercial Strategy Insights</h3>
+                                <p style="color: var(--text-muted); font-size: 0.875rem;">AI-generated decision recommendations based on workflow ROI and execution costs</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem;">
+                        <!-- Insight 1: Scale -->
+                        <div style="background: var(--panel-glow); border: 1px solid var(--border-light); padding: 1.25rem; border-radius: 0.75rem; transition: transform 0.2s ease;">
+                            <h4 style="color: var(--success); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 1.1rem;"><i class="ph ph-rocket-launch"></i> Scale Opportunity</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                                The <strong style="color: var(--text-main);">Sales Follow-up Drafting</strong> workflow is delivering a massive <span style="color: var(--text-main); font-weight: 600;">24.4x ROI</span>. 
+                                <br><br>
+                                <strong style="color: var(--text-main);">Suggestion:</strong> Automate this agent across the entire CRM pipeline and increase maximum token budget to capture more conversions.
+                            </p>
+                        </div>
+                        
+                        <!-- Insight 2: Optimize -->
+                        <div style="background: var(--panel-glow); border: 1px solid var(--border-light); padding: 1.25rem; border-radius: 0.75rem; transition: transform 0.2s ease;">
+                            <h4 style="color: var(--danger); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 1.1rem;"><i class="ph ph-scissors"></i> Cost Optimization Alert</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                                <strong style="color: var(--text-main);">Daily Internal Summary</strong> is costing NT$ 3,260 but yielding an unsustainable <span style="color: var(--text-main); font-weight: 600;">0.9x ROI</span>. 
+                                <br><br>
+                                <strong style="color: var(--text-main);">Suggestion:</strong> Replace the heavy GPT-4.1 model with a smaller, faster model (e.g., Llama 3 8B or GPT-4o-mini) to instantly slash costs by up to 80%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Script that handles the logic -->
+    <script src="app.js"></script>
+    <script>
+        // Tab switching logic
+        const btnConfig = document.getElementById('tab-btn-config');
+        const btnAnalytics = document.getElementById('tab-btn-analytics');
+        const tabConfig = document.getElementById('tab-config');
+        const tabAnalytics = document.getElementById('tab-analytics');
+
+        btnConfig.addEventListener('click', () => {
+            btnConfig.classList.add('active');
+            btnAnalytics.classList.remove('active');
+            tabConfig.classList.remove('hidden');
+            tabAnalytics.classList.add('hidden');
+        });
+
+        btnAnalytics.addEventListener('click', () => {
+            btnAnalytics.classList.add('active');
+            btnConfig.classList.remove('active');
+            tabAnalytics.classList.remove('hidden');
+            tabConfig.classList.add('hidden');
+            
+            // Render charts dynamically based on checkboxes
+            renderCharts();
+        });
+
+        function getSelectedGoals() {
+            const goals = [];
+            if(document.getElementById('goal-time') && document.getElementById('goal-time').checked) goals.push('Time Saved');
+            if(document.getElementById('goal-roi') && document.getElementById('goal-roi').checked) goals.push('Maximize ROI');
+            if(document.getElementById('goal-cost') && document.getElementById('goal-cost').checked) goals.push('Cost Efficiency');
+            if(document.getElementById('goal-quality') && document.getElementById('goal-quality').checked) goals.push('Output Quality');
+            if(document.getElementById('goal-error-rate') && document.getElementById('goal-error-rate').checked) goals.push('Error Rate');
+            if(document.getElementById('goal-csat') && document.getElementById('goal-csat').checked) goals.push('Boost CSAT');
+            return goals.length > 0 ? goals : ['Default Base ROI'];
+        }
+
+        let usageChart, catChart, modelChart;
+
+        function renderCharts() {
+            // Clean up existing charts if re-rendered
+            if(usageChart) usageChart.destroy();
+            if(catChart) catChart.destroy();
+            if(modelChart) modelChart.destroy();
+
+            // Global Chart defaults for Dark Mode Neon Theme
+            Chart.defaults.color = '#9ca3af';
+            Chart.defaults.font.family = 'Inter';
+            
+            // 1. Usage Timeline Chart (Area)
+            const ctxUsage = document.getElementById('usageChart').getContext('2d');
+            let gradientUsage = ctxUsage.createLinearGradient(0, 0, 0, 300);
+            gradientUsage.addColorStop(0, 'rgba(0, 246, 255, 0.4)');
+            gradientUsage.addColorStop(1, 'rgba(0, 246, 255, 0.0)');
+            
+            usageChart = new Chart(ctxUsage, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                    datasets: [{
+                        label: 'Tokens Consumed (Millions)',
+                        data: [2.1, 3.4, 2.8, 5.2, 7.1, 6.8, 9.4],
+                        borderColor: '#00f6ff',
+                        backgroundColor: gradientUsage,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00f6ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 2. Performance by Selected Goal Chart (Bar) - Dynamic
+            const selectedLabels = getSelectedGoals();
+            const selectedData = selectedLabels.map(label => {
+                if(label === 'Time Saved') return Math.floor(Math.random() * 40) + 40;
+                if(label === 'Maximize ROI') return Math.floor(Math.random() * 50) + 50;
+                if(label === 'Cost Efficiency') return Math.floor(Math.random() * 30) + 30;
+                if(label === 'Output Quality') return Math.floor(Math.random() * 20) + 80;
+                if(label === 'Error Rate') return Math.floor(Math.random() * 30) + 70;
+                if(label === 'Boost CSAT') return Math.floor(Math.random() * 40) + 50;
+                return 50;
+            });
+            const baseColors = ['rgba(14, 165, 233, 0.8)', 'rgba(139, 92, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(239, 68, 68, 0.8)', 'rgba(168, 85, 247, 0.8)'];
+
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+            catChart = new Chart(ctxCategory, {
+                type: 'bar',
+                data: {
+                    labels: selectedLabels,
+                    datasets: [{
+                        label: 'Performance Score or Return %',
+                        data: selectedData,
+                        backgroundColor: baseColors.slice(0, selectedLabels.length),
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 3. Model Distribution (Doughnut)
+            const ctxModel = document.getElementById('modelChart').getContext('2d');
+            modelChart = new Chart(ctxModel, {
+                type: 'doughnut',
+                data: {
+                    labels: ['GPT-4 Turbo', 'Claude 3.5 Sonnet', 'Gemini 1.5 Pro', 'Llama 3'],
+                    datasets: [{
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#8b5cf6', '#00f6ff', '#f59e0b', '#ef4444'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

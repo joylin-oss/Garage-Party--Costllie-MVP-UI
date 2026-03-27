@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costllie API Gateway | Primary Dashboard</title>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(0, 246, 255, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 1.25rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-icon {
+            position: absolute;
+            right: -20px;
+            bottom: -50px;
+            font-size: 15rem;
+            opacity: 0.03;
+            color: #fff;
+            transform: rotate(-15deg);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 65%;
+        }
+
+        .hero-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Stats Grid overrides for index */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .summary-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .summary-card .icon-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 1rem;
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .summary-card .icon-wrap.primary {
+            background: rgba(0, 246, 255, 0.15);
+            color: #00f6ff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"><i class="ph ph-hexagon"></i></div>
+                <h1 class="logo-text">Costllie</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="projects.html" class="nav-item"><i class="ph ph-folder-open"></i> Projects</a>
+                <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Workspace Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title">
+                    <h2>Overview Dashboard</h2>
+                    <p class="subtitle">Your high-level metrics and API gateway management</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-icon"><i class="ph ph-bell"></i></button>
+                    
+                    <!-- Profile with Team Dropdown -->
+                    <div class="profile-dropdown-container" style="position: relative; display: inline-block;">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User"
+                            style="width: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;" 
+                            onclick="toggleTeamDropdown()" id="avatar-img" onmouseover="this.style.borderColor='var(--primary-neon)'" onmouseout="this.style.borderColor='transparent'">
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="team-dropdown" class="glass-panel hidden" style="position: absolute; right: 0; top: 55px; width: 260px; padding: 1.25rem; border-radius: 1rem; z-index: 100; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); border: 1px solid var(--border-light);">
+                            <h4 style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light); font-weight: 500;">Workspace Team Members</h4>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Team Member 1 -->
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" style="width: 36px; border-radius: 50%;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">Admin User <span style="font-size: 0.7rem; background: rgba(14, 165, 233, 0.2); color: #0ea5e9; padding: 0.1rem 0.4rem; border-radius: 1rem; margin-left: 0.25rem;">You</span></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem;">Workspace Owner</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Team Member 2 -->
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=8b5cf6&color=fff" style="width: 36px; border-radius: 50%;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">Jane Doe</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem;">Lead Developer</div>
+                                    </div>
+                                </div>
+
+                                <!-- Team Member 3 -->
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <img src="https://ui-avatars.com/api/?name=Alex+Smith&background=10b981&color=fff" style="width: 36px; border-radius: 50%;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">Alex Smith</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem;">Marketing Lead</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-secondary btn-full" style="margin-top: 1.25rem; font-size: 0.85rem; padding: 0.6rem; border-style: dashed;"><i class="ph ph-user-plus"></i> Invite Member</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-hero">
+                <i class="ph ph-rocket hero-bg-icon"></i>
+                <div class="hero-content">
+                    <h2>Welcome to Costllie API Gateway</h2>
+                    <p>Connect your custom AI Agents (your "lobsters"), manage their token limits, constrain costs, and
+                        track their long-term ROI in one unified interface. Start by setting up a new project or linking
+                        your API keys.</p>
+                    <a href="projects.html" class="btn btn-primary" style="display: inline-flex; width: auto;"><i
+                            class="ph ph-folder-plus"></i> Go to Projects Explorer</a>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="icon-wrap primary"><i class="ph ph-chart-line-up"></i></div>
+                    <div>
+                        <span class="label" style="color: var(--text-muted); font-size: 0.875rem;">Global Monthly
+                            ROI</span>
+                        <strong class="value"
+                            style="display: block; font-size: 1.75rem; color: var(--text-main); margin-top: 0.25rem;">+74.2%</strong>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="icon-wrap"><i class="ph ph-cpu"></i></div>
+                    <div>
+                        <span class="label" style="color: var(--text-muted); font-size: 0.875rem;">Top Performing
+                            Model</span>
+                        <strong class="value"
+                            style="display: block; font-size: 1.25rem; color: var(--text-main); margin-top: 0.25rem;">GPT-4
+                            Turbo</strong>
+                        <span style="font-size: 0.75rem; color: #10b981;">Best Cost-to-Value ratio</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="icon-wrap success"><i class="ph ph-wallet"></i></div>
+                    <div>
+                        <span class="label" style="color: var(--text-muted); font-size: 0.875rem;">Monthly Resource
+                            Saved</span>
+                        <strong class="value"
+                            style="display: block; font-size: 1.75rem; color: var(--text-main); margin-top: 0.25rem;">$2,450</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Alerts & API Status -->
+            <section class="widget glass-panel" style="margin-top: 2rem;">
+                <div class="widget-header">
+                    <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-main);">
+                        <i class="ph ph-warning-circle" style="color: var(--danger);"></i> 
+                        API Health & System Alerts
+                    </h3>
+                    <span class="table-badge" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">1 Critical Event</span>
+                </div>
+                <div class="widget-body" style="padding: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                        
+                        <!-- Alert Item 1: Circuit Breaker -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 1.25rem; border-radius: 0.75rem; display: flex; gap: 1rem; align-items: flex-start; transition: all 0.2s ease;">
+                            <div style="background: rgba(239, 68, 68, 0.1); padding: 0.5rem; border-radius: 50%; color: var(--danger);">
+                                <i class="ph ph-shield-warning" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <strong style="display: block; font-size: 1rem; margin-bottom: 0.25rem; color: var(--text-main);">API Circuit Breaker Triggered (熔斷機制啟動)</strong>
+                                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.75rem; line-height: 1.5;">
+                                    <span style="color: var(--danger); font-weight: 600;">[Project: Event FAQ Agent]</span> Anomalous token usage detected (+400% spike in 10 mins). API requests automatically halted to prevent budget bleeding.
+                                </p>
+                                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                    <button class="btn btn-secondary btn-sm" style="border-color: rgba(239, 68, 68, 0.3); color: var(--danger);">Investigate Issue</button>
+                                    <button class="btn btn-secondary btn-sm" style="background: transparent;">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alert Item 2: Latency -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-left: 4px solid #fbbf24; padding: 1.25rem; border-radius: 0.75rem; display: flex; gap: 1rem; align-items: flex-start; transition: all 0.2s ease;">
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 0.5rem; border-radius: 50%; color: #fbbf24;">
+                                <i class="ph ph-plugs-connected" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <strong style="display: block; font-size: 1rem; margin-bottom: 0.25rem; color: var(--text-main);">Elevated Latency Warning (API 延遲警告)</strong>
+                                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.75rem; line-height: 1.5;">
+                                    <span style="color: #fbbf24; font-weight: 600;">[Model: Claude 3.5 Sonnet]</span> Average response time increased to 4.2s globally. Auto-routing to backup endpoint.
+                                </p>
+                                <span style="display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 1.25rem;">Detected 12 mins ago</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function toggleTeamDropdown() {
+            const dropdown = document.getElementById('team-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside the avatar/dropdown area
+        document.addEventListener('click', function(event) {
+            const container = document.querySelector('.profile-dropdown-container');
+            if (container && !container.contains(event.target)) {
+                document.getElementById('team-dropdown').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

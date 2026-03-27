@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costllie API Gateway | Settings</title>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        .setting-info h4 { margin-bottom: 0.25rem; }
+        .setting-info p { color: var(--text-muted); font-size: 0.875rem; }
+        
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #374151;
+            transition: .3s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-neon);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"><i class="ph ph-hexagon"></i></div>
+                <h1 class="logo-text">Costllie</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="projects.html" class="nav-item"><i class="ph ph-folder-open"></i> Projects</a>
+                <a href="settings.html" class="nav-item active"><i class="ph ph-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Workspace Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title">
+                    <h2>Global Settings</h2>
+                    <p class="subtitle">Customize your Costllie workspace preferences</p>
+                </div>
+            </header>
+
+            <div class="settings-card">
+                <h3><i class="ph ph-palette" style="color: var(--primary-neon); margin-right: 0.5rem;"></i> Appearance</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Light Mode</h4>
+                        <p>Switch between dark and light themes.</p>
+                    </div>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- AI Support Chat Card -->
+            <div class="settings-card" style="margin-top: 1.5rem; display: flex; flex-direction: column; height: 500px; max-width: 600px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; color: var(--text-main);">
+                        <i class="ph ph-chat-circle-dots" style="color: var(--primary-neon); margin-right: 0.5rem; font-size: 1.5rem;"></i> 
+                        Costllie AI Support Agent
+                    </h3>
+                    <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.2);">Online</span>
+                </div>
+                
+                <!-- Chat Window -->
+                <div id="chat-window" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.5rem; margin-bottom: 1.25rem;">
+                    <!-- Bot Message -->
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div style="background: rgba(0, 246, 255, 0.1); color: #00f6ff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(0, 246, 255, 0.3);">
+                            <i class="ph ph-robot" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div style="background: var(--panel-bg); border: 1px solid var(--border-light); padding: 0.8rem 1rem; border-radius: 0.25rem 1rem 1rem 1rem; max-width: 85%;">
+                            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">Hi there! I am your Costllie Support Agent. How can I help you optimize your agent workflows, manage scaling budgets, or resolve API issues today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Focus -->
+                <div style="display: flex; gap: 0.75rem; margin-top: auto; border-top: 1px solid var(--border-light); padding-top: 1.25rem;">
+                    <input type="text" id="chat-input" placeholder="Ask about billing, ROI, or integration..." style="flex: 1; padding: 0.8rem 1.25rem; border-radius: 2rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); font-size: 0.95rem; outline: none;">
+                    <button id="send-btn" class="btn btn-primary" onclick="sendChatMessage()" style="width: auto; padding: 0 1.25rem; border-radius: 2rem; cursor: pointer; transition: transform 0.2s;"><i class="ph ph-paper-plane-right" style="font-size: 1.25rem;"></i></button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('costllie-theme') || 'dark';
+            
+            toggle.checked = currentTheme === 'light';
+
+            toggle.addEventListener('change', (e) => {
+                const newTheme = e.target.checked ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('costllie-theme', newTheme);
+            });
+
+            // Allow pressing Enter for chat
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') sendChatMessage();
+                });
+            }
+        });
+
+        // Simple Chat Logic for AI Support
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const windowEl = document.getElementById('chat-window');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Add user message to UI
+            const userMsg = `
+                <div style="display: flex; gap: 0.75rem; align-items: flex-start; justify-content: flex-end; animation: fadeIn 0.3s ease;">
+                    <div style="background: var(--primary-neon); padding: 0.8rem 1rem; border-radius: 1rem 0.25rem 1rem 1rem; max-width: 85%; box-shadow: 0 4px 12px rgba(0, 246, 255, 0.2);">
+                        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: #fff;">${text}</p>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" style="width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2);">
+                </div>
+            `;
+            windowEl.insertAdjacentHTML('beforeend', userMsg);
+            input.value = '';
+            windowEl.scrollTop = windowEl.scrollHeight;
+
+            // Trigger Mock Bot Formatting/Typing effect
+            setTimeout(() => {
+                const typingId = 'typing-' + Date.now();
+                const typingIndicator = `
+                    <div id="${typingId}" style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div style="background: rgba(0, 246, 255, 0.1); color: #00f6ff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(0, 246, 255, 0.3);">
+                            <i class="ph ph-robot" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div style="background: var(--panel-bg); border: 1px solid var(--border-light); padding: 0.8rem 1rem; border-radius: 0.25rem 1rem 1rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
+                            Agent is typing...
+                        </div>
+                    </div>
+                `;
+                windowEl.insertAdjacentHTML('beforeend', typingIndicator);
+                windowEl.scrollTop = windowEl.scrollHeight;
+
+                // Deliver actual reply
+                setTimeout(() => {
+                    document.getElementById(typingId).remove();
+                    const botMsg = `
+                        <div style="display: flex; gap: 0.75rem; align-items: flex-start; animation: fadeIn 0.3s ease;">
+                            <div style="background: rgba(0, 246, 255, 0.1); color: #00f6ff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(0, 246, 255, 0.3);">
+                                <i class="ph ph-robot" style="font-size: 1.25rem;"></i>
+                            </div>
+                            <div style="background: var(--panel-bg); border: 1px solid var(--border-light); padding: 0.8rem 1rem; border-radius: 0.25rem 1rem 1rem 1rem; max-width: 85%;">
+                                <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">That's interesting! Regarding "${text}", as an AI Support Agent demo, I recommend checking out the <strong>Projects Explorer</strong> to see live configurations, or visiting the <strong>Output Analytics</strong> tab to dive deeper into performance ROI metrics.</p>
+                            </div>
+                        </div>
+                    `;
+                    windowEl.insertAdjacentHTML('beforeend', botMsg);
+                    windowEl.scrollTop = windowEl.scrollHeight;
+                }, 1200);
+
+            }, 400);
+        }
+    </script>
+</body>
+</html>
